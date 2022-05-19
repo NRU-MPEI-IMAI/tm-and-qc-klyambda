@@ -1,0 +1,86 @@
+name: '0^n1^n2^n'
+source code: |
+  input: '0011122'
+  blank: ' '
+  start state: start
+  table:
+    start:
+      '0': {write: 'A', R: replace_1}
+      '1': {L: not_in}
+      '2': {L: not_in}
+      ' ': {write: 'T', R: accepted}
+    
+    replace_1:
+      '0': {R: replace_1}
+      'B': {R: replace_1}
+      '1': {write: 'B', R: replace_2}
+      '2': {L: not_in}
+      'C': {L: not_in}
+      ' ': {L: not_in}
+      
+    replace_2:
+      '1': {R: replace_2}
+      'C': {R: replace_2}
+      '2': {write: 'C', L: to_start}
+      '0': {L: not_in}
+      ' ': {L: not_in}
+      
+    to_start:
+      '1': {L: to_start}
+      'C': {L: to_start}
+      'B': {L: to_start}
+      '0': {L: to_start}
+      'A': {R: replace_0}
+      
+    replace_0:
+      '0': {write: 'A', R: replace_1}
+      'B': {L: to_left}
+      
+      
+    to_left:
+      'A': {L: to_left}
+      ' ': {R: delete_block}
+      
+    delete_block:
+      'A': {write: ' ', R: delete_block}
+      'B': {write: ' ', R: delete_block}
+      'C': {write: ' ', R: delete_block}
+      '0': {L: not_in}
+      '1': {L: not_in}
+      '2': {L: not_in}
+      ' ': {write: 'T', R: accepted}
+      
+    not_in:
+      '0': {L: not_in}
+      '1': {L: not_in}
+      '2': {L: not_in}
+      'A': {L: not_in}
+      'B': {L: not_in}
+      'C': {L: not_in}
+      ' ': {R: not_in_}
+      
+    not_in_:
+      '0': {write: ' ', R: not_in_}
+      'A': {write: ' ', R: not_in_}
+      '1': {write: ' ', R: not_in_}
+      'B': {write: ' ', R: not_in_}
+      '2': {write: ' ', R: not_in_}
+      'C': {write: ' ', R: not_in_}
+      ' ': {write: 'F', R: accepted}
+      
+    accepted:
+    
+    
+    
+      
+positions:
+  start: {x: 62.86, y: 209.26}
+  replace_1: {x: 279.91, y: 119.78}
+  replace_2: {x: 368.82, y: 104.87}
+  to_start: {x: 255.85, y: 344.2}
+  replace_0: {x: 193.5, y: 142.69}
+  to_left: {x: 506.76, y: 36.53}
+  delete_block: {x: 552.66, y: 122.67}
+  not_in: {x: 509.91, y: 280.04}
+  not_in_: {x: 591.85, y: 267.14}
+  accepted: {x: 708.05, y: 243.86}

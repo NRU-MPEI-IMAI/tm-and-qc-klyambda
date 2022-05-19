@@ -1,0 +1,17 @@
+name: unary sum
+source code: |
+  input: '111+11'
+  blank: ' '
+  start state: remove_one
+  table:
+    remove_one:
+      1:  {write: ' ', R: replace}
+      +: {write: ' ', R: accept}
+    replace:
+      1:  {R: replace}
+      +:  {write: 1, R: accept}
+    accept:
+positions:
+  remove_one: {x: 248, y: 286.46}
+  replace: {x: 406.66, y: 122.69}
+  accept: {x: 586.08, y: 283.99}

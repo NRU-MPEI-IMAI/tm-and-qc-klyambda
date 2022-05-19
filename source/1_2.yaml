@@ -1,0 +1,52 @@
+name: unary multiplication
+source code: |
+  input: '111x11'
+  blank: ' '
+  start state: add_eq_sign
+  table:
+    add_eq_sign:
+      '1': {R: add_eq_sign}
+      'x': {R: add_eq_sign}
+      ' ': {write: '=', L: to_start}
+    to_start:
+      '1': {L: to_start}
+      'x': {L: to_start}
+      'B': {write: '1', L: to_start}
+      'A': {R: replace_one_in_first}
+      ' ': {R: replace_one_in_first}
+    replace_one_in_first:
+      '1': {write: 'A', R: to_x}
+      'x': {L: get_result}
+    to_x:
+      '1': {R: to_x}
+      'x': {R: replace_one_in_second}
+    replace_one_in_second:
+      '1': {write: 'B', R: add_second_factor}
+      '=': {L: to_start}
+    add_second_factor:
+      '1': {R: add_second_factor}
+      '=': {R: add_second_factor}
+      ' ': {write: '1', L: to_B}
+    to_B:
+      '1': {L: to_B}
+      '=': {L: to_B}
+      'B': {R: replace_one_in_second}
+    get_result:
+      'A': {write: ' ', L: get_result}
+      ' ': {R: get_result}
+      '1': {write: ' ', R: get_result}
+      'x': {write: ' ', R: get_result}
+      '=': {write: ' ', R: accepted}
+    accepted:
+    
+      
+positions:
+  add_eq_sign: {x: 517.73, y: 91.21, fixed: false}
+  to_start: {x: 478.4, y: 232.6}
+  replace_one_in_first: {x: 341.48, y: 292.93, fixed: false}
+  to_x: {x: 291.52, y: 430.24}
+  replace_one_in_second: {x: 423.92, y: 360.29, fixed: false}
+  add_second_factor: {x: 421.45, y: 203.92}
+  to_B: {x: 549.67, y: 290.34, fixed: false}
+  get_result: {x: 202.75, y: 264.36, fixed: false}
+  accepted: {x: 140.8, y: 138.58}

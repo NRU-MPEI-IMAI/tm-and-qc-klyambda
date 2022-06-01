@@ -21,6 +21,10 @@
 \usepackage{epigraph}
 \usepackage{sectsty}
 \usepackage{listings}
+\usepackage{minted}
+\usepackage[braket, qm]{qcircuit}
+\usepackage{graphicx}
+
 
 \hypersetup{
     colorlinks=true,
@@ -40,23 +44,6 @@
 
 \maketitle
 
-\section{Введение}
-
-Для того, чтобы работа была принята, требуется соблюдать ряд условий:
-
-\begin{enumerate}
-    \item Текст решения домашней работы должен быть подготовлен в одном из следующих форматов: \href{https://www.latex-project.org/}{\LaTeX}, \href{https://en.wikipedia.org/wiki/Markdown}{Markdown}, \href{https://asciidoc-py.github.io/index.html}{AsciiDOC}
-    \item Дополнительно должен быть приложен PDF файл
-    \item Для набора рекомендуется использовать сервисы типа \href{https://www.overleaf.com}{Overleaf}
-    \item Работу можно выполнить на английском языке
-    \item Иллюстрации, должны быть описаны на декларативном языке \href{https://graphviz.org/}{Graphviz} или \href{https://mermaid-js.github.io/mermaid/#/}{Mermaid}. В сам документ можно вставить отрендеренную картинку.
-    \item За каждое задание можно получить определённое количество количество баллов, указанное рядом с заданием
-    \item Мягкий дедлайн -- 20 дней (12:00 20 мая 2022 года), после него $-30\%$ к оценке
-    \item Для зачёта надо набрать $60\%$ от максимальной оценки
-    \item Максимальное количество баллов: 10.
-    \item Работа должна быть выложена на \href{https://github.com/}{GitHub}, в репозитории, созданном к ней
-\end{enumerate}
-
 \section{Машины Тьюринга}
 
 Работу требуется выполнять в системе \url{turingmachine.io}. \\\\
@@ -67,18 +54,53 @@
 Реализуйте машины Тьюринга, которые позволяют выполнять следующие операции:
 \begin{enumerate}
     \item Сложение двух унарных чисел (1 балла)
+    \\Алгоритм унарного сложения: \\1. Удаляем единицу первого числа и заменяем + на 1.
     \item Умножение унарных чисел (1 балл)
 \end{enumerate}
+Алгоритм унарного умножения:
+\begin{enumerate}
+    \item Добавляем знак равенства после второго числа и возвращаемся в начало первого числа
 
+    \item Заменяем единицу на A (тем самым определяем, какие единицы первого числа уже использованы) и идем до второго числа (после знака x)
+    
+    \item Заменяем единицу на B (тем самым определяем, какие единицы второго числа уже использованы) и добавляем единицу после знака равенства. Идем обратно ко второму числу, пока не встретим B. Повторяем этот пункт, пока не будут перебраны все единицы второго числа и скопированы за знаком равенства. 
+    
+    \item Заменяем все символы B на единицы, идем обратно к первому числу, пока не встретим символ A, и сдвигаем головку вправо. Если встретим единицу переходим в пункт 2, тем самым пока перебираем все единицы первого числа. Если встретим знак умножения, то удаляем первые два числа, знаки умножения и равенства, оставив только результат. 
+\end{enumerate}
 
+\newpage
 \subsection{Операции с языками и символами}
 
 Реализуйте машины Тьюринга, которые позволяют выполнять следующие операции:
+\\\\1. $\textbf{Принадлежность к языку}$ $L = \{ 0^n1^n2^n \}, n \ge 0$ (0.5 балла)
+    
+Для слов, принадлежащих языку, будем выводить символ T, в противном случае - F.\\
+Алгоритм:
 \begin{enumerate}
-    \item Принадлежность к языку $L = \{ 0^n1^n2^n \}, n \ge 0$ (0.5 балла)
-    \item Проверка соблюдения правильности скобок в строке (минимум 3 вида скобок) (0.5 балла)
-    \item Поиск минимального по длине слова в строке (слова состоят из символов 1 и 0 и разделены пробелом) (1 балл)
+    \item Рассматриваем слова, в которых первый символ пустой или 0, иначе слово не принадлежит языку.
+    \item Заменяем 0 на символ A, переходим в состоянием $replace_1$.
+    \item В состоянии $replace_1$ если встретим следующие символамы, то слово не принадлежит языку: 2, С, пустой символ. Пропускаем символы 0 и B. Заменяем 1 на символ B, переходим в состояние $replace_2$.
+    \item В состоянии $replace_2$ если встретим пустой символ или 0, то слово не принадлежит языку. Пропускаем символы 1 и C. Заменяем 2 на символ C. Возвращаемся обратно, до тех пор, пока не встретим символ A.
+    \item Если символ справа от A это 0 (остались еще нули), то переходим в пункт 2. Если - B, то значит, что все нули закончились, соответственно если слово принадлежит языку, то и 1 и 2 должны закончиться. 
+    \item Начиная самого левого символа удаляем символы A, B, C. Если все символы закончились, значит слово принадлежит языку. Если при чтении очередного символа получили 0, 1 или 2, то значит, слово не принадлежит языку. 
 \end{enumerate}
+ 
+ 
+\\\\2. $\textbf{Проверка соблюдения правильности скобок в строке (минимум 3 вида скобок)}$ (0.5 балла)
+
+\begin{enumerate}
+    \item Если всретим закрывающую скобку, то заканчиваем. Иначе ищем открывающую скобку и помечаем эту скобку буквой A и ищем закрывающую скобку этого же типа, двигаясь направо. Если не нашли открывающую и закрывающую скобки, то это значит, что мы перебрали все слово, тогда удаляем все слово и пишем символ T.
+    \item Если достигли пустого слова, то слово не принадлежит языку. Иначе помечаем найденную закрывающую скобку буквой A и идем к началу. Переходим к пункту 1.
+\end{enumerate}
+
+
+\\\\3. $\textbf{Поиск минимального по длине слова в строке (слова состоят из символов 1 и 0 и разделены пробелом)}$ (1 балл)
+\begin{enumerate}
+    \item 
+    \item 
+\end{enumerate}
+
+
 
 
 \section{Квантовые вычисления}
@@ -104,21 +126,32 @@ $$\Ket{S} = \frac{1}{\sqrt2}(\Ket{0\dots0} +\Ket{\psi})$$
 \end{enumerate}
 
 
-Заготовка для кода:
-\begin{lstlisting}
-namespace Solution {
-        open Microsoft.Quantum.Primitive;
-        open Microsoft.Quantum.Canon;
-        operation Solve (qs : Qubit[], bits : Bool[]) : ()
-        {
-            body
-            {
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               gobble=2,
+               frame=lines,
+               framesep=2mm]{python}
+    def Solve1(qs, psi):
+        global circuit
+        # применяем оператор Адамара для первого кубита
+        circuit.h(0) 
+        circuit.barrier()
+        # для всех единичных кубитов применяем оператор CNOT с первым
+        for i in range (1, len(psi)):
+            if psi[i] == 1: circuit.cx(qs[0], qs[i])
+\end{minted}
 
-            }
-        }
-}
-\end{lstlisting}
-
+$\psi = \Ket{1010110}$
+\Qcircuit @C=1.0em @R=0.2em @!R { \\
+	 	\nghost{{qs}_{0} : \ket{{0}} } & \lstick{{qs}_{0} : \ket{{0}} } & \gate{\mathrm{H}} \barrier[0em]{6} & \qw & \ctrl{2} & \ctrl{4} & \ctrl{5} & \qw & \qw\\
+	 	\nghost{{qs}_{1} : \ket{{0}} } & \lstick{{qs}_{1} : \ket{{0}} } & \qw & \qw & \qw & \qw & \qw & \qw & \qw\\
+	 	\nghost{{qs}_{2} : \ket{{0}} } & \lstick{{qs}_{2} : \ket{{0}} } & \qw & \qw & \targ & \qw & \qw & \qw & \qw\\
+	 	\nghost{{qs}_{3} : \ket{{0}} } & \lstick{{qs}_{3} : \ket{{0}} } & \qw & \qw & \qw & \qw & \qw & \qw & \qw\\
+	 	\nghost{{qs}_{4} : \ket{{0}} } & \lstick{{qs}_{4} : \ket{{0}} } & \qw & \qw & \qw & \targ & \qw & \qw & \qw\\
+	 	\nghost{{qs}_{5} : \ket{{0}} } & \lstick{{qs}_{5} : \ket{{0}} } & \qw & \qw & \qw & \qw & \targ & \qw & \qw\\
+	 	\nghost{{qs}_{6} : \ket{{0}} } & \lstick{{qs}_{6} : \ket{{0}} } & \qw & \qw & \qw & \qw & \qw & \qw & \qw\\
+\\ }
 
 \subsection{Различение состояний 1 (1 балл)}
 
@@ -129,21 +162,32 @@ $$\Ket{W} = \frac{1}{\sqrt N}(\Ket{10\dots00}+\Ket{01\dots00} + \dots +\Ket{00\d
 
 Требуется выполнить необходимые преобразования, чтобы точно различить эти два состояния. Возвращать $0$, если первое состояние и 1, если второе. 
 \\\\
-Заготовка для кода:
-\begin{lstlisting}
-namespace Solution {
-        open Microsoft.Quantum.Primitive;
-        open Microsoft.Quantum.Canon;
-        operation Solve (qs : Qubit[]) : Int
-        {
-            body
-            {
 
-                return 
-            }
-        }
-}
-\end{lstlisting}
+\begin{enumerate}
+    \item Первое состояние: при измерении все кубиты равны 0 или 1.
+    \item Второе состояние: при измерении только один кубит равен 1, остальные равны 0
+\end{enumerate}
+
+При N = 1 различить состояния невозможно (в этом случае - $\Ket{W}$)
+
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               gobble=2,
+               frame=lines,
+               framesep=2mm]{python}
+    def Solve2(q):
+        msr = q.measure()[0]
+        one_count = 0
+        for q in msr:
+            if q == '1': one_count += 1
+        if one_count == 1:
+            return 'W'
+        else:
+            return 'GHZ'
+    Solve2(GHZ)
+\end{minted}
+
 
 
 \subsection{Различение состояний 2 (2 балла)}
@@ -158,21 +202,145 @@ $$\Ket{S_3} = \frac{1}{2}(\Ket{00} - \Ket{01} - \Ket{10} + \Ket{11})$$
 
 Требуется выполнить необходимые преобразования, чтобы точно различить эти четыре состояния. Возвращать требуется индекс состояния (от $0$ до $3$). 
 \\\\
-Заготовка для кода:
-\begin{lstlisting}
-namespace Solution {
-        open Microsoft.Quantum.Primitive;
-        open Microsoft.Quantum.Canon;
-        operation Solve (qs : Qubit[]) : Int
-        {
-            body
-            {
 
-                return 
-            }
-        }
-}
-\end{lstlisting}
+Применяем оператор Адамара для обоих кубитов и измеряем получившиеся состояния.\\
+
+\begin{equation*}
+H^2 = \frac{1}{2}
+\begin{pmatrix}
+1 & 1 & 1 & 1\\
+1 & -1 & 1 & -1\\
+1 & 1 & -1 & -1\\
+1 & -1 & 1 & -1
+\end{pmatrix}
+\end{equation*}
+
+\begin{equation*}
+H^2\Ket{S_0} = \frac{1}{4}
+\begin{pmatrix}
+1 & 1 & 1 & 1\\
+1 & -1 & 1 & -1\\
+1 & 1 & -1 & -1\\
+1 & -1 & 1 & -1
+\end{pmatrix}
+\times
+\begin{pmatrix}
+1 \\
+1 \\
+1 \\
+1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 \\
+0 \\
+0 \\
+0
+\end{pmatrix}
+\end{equation*}
+
+\begin{equation*}
+H^2\Ket{S_1} = \frac{1}{4}
+\begin{pmatrix}
+1 & 1 & 1 & 1\\
+1 & -1 & 1 & -1\\
+1 & 1 & -1 & -1\\
+1 & -1 & 1 & -1
+\end{pmatrix}
+\times
+\begin{pmatrix}
+1 \\
+-1 \\
+1 \\
+-1
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 \\
+1 \\
+0 \\
+0
+\end{pmatrix}
+\end{equation*}
+
+\begin{equation*}
+H^2\Ket{S_2} = \frac{1}{4}
+\begin{pmatrix}
+1 & 1 & 1 & 1\\
+1 & -1 & 1 & -1\\
+1 & 1 & -1 & -1\\
+1 & -1 & 1 & -1
+\end{pmatrix}
+\times
+\begin{pmatrix}
+1 \\
+1 \\
+-1 \\
+-1
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 \\
+0 \\
+1 \\
+0
+\end{pmatrix}
+\end{equation*}
+
+
+\begin{equation*}
+H^2\Ket{S_4} = \frac{1}{4}
+\begin{pmatrix}
+1 & 1 & 1 & 1\\
+1 & -1 & 1 & -1\\
+1 & 1 & -1 & -1\\
+1 & -1 & 1 & -1
+\end{pmatrix}
+\times
+\begin{pmatrix}
+1 \\
+-1 \\
+-1 \\
+1
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 \\
+0 \\
+0 \\
+1
+\end{pmatrix}
+\end{equation*}
+
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               gobble=2,
+               frame=lines,
+               framesep=2mm]{python}
+    def Solve3(q):
+        global circuit
+        circuit.initialize(q)
+        circuit.h(0)
+        circuit.h(1)
+    
+        state = Statevector(circuit)
+        msr = state.measure()[0]
+        if msr == '00':
+            return 0
+        elif msr == '01':
+            return 1
+        elif msr == '10':
+            return 2
+        elif msr == '11':
+            return 3
+    
+    circuit = QuantumCircuit(2)
+    print(Solve3(S3))
+\end{minted}
+
+
+
 
 
 \subsection{Написание оракула 1 (2 балла)}

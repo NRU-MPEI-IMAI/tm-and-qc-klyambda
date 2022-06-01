@@ -1,0 +1,55 @@
+name: correct brackets
+source code: |-
+  input: '[({)}()]'
+  blank: ' '
+  start state: open_bracket
+  table:
+    open_bracket:
+      '(': {write: 'A', R: closed_bracket1}
+      '{': {write: 'A', R: closed_bracket2}
+      '[': {write: 'A', R: closed_bracket3}
+      'A': {R: open_bracket}
+      [')', '}', ']']: {L: not_correct}
+      ' ': {L: correct}
+      
+    closed_bracket1:
+      ['A', '{', '}', '[', ']', '(']: {R: closed_bracket1}
+      ')': {write: 'A', L: to_start}
+      ' ': {L: not_correct}
+      
+    closed_bracket2:
+      ['A', '(', ')', '[', ']', '{']: {R: closed_bracket2}
+      '}': {write: 'A', L: to_start}
+      ' ': {L: not_correct}
+      
+    closed_bracket3:
+      ['A', '(', ')', '{', '}', '[']: {R: closed_bracket3}
+      ']': {write: 'A', L: to_start}
+      ' ': {L: not_correct}
+      
+    to_start:
+      ['A', '{', '}', '[', ']', '(', ')']: {L: to_start}
+      ' ': {R: open_bracket}
+      
+    not_correct:
+      ['A', '{', '}', '[', ']', '(', ')']: {L: not_correct}
+      ' ': {R: not_correct_}
+      
+    not_correct_:
+      ['A', '{', '}', '[', ']', '(', ')']: {write: ' ', R: not_correct_}
+      ' ': {write: 'F', R: accepted}
+      
+    correct:
+      ['A', '{', '}', '[', ']', '(', ')']: {write: ' ', L: correct}
+      ' ': {write: 'T', R: accepted}
+    accepted:
+positions:
+  open_bracket: {x: 165.2, y: 206.42}
+  closed_bracket1: {x: 312.02, y: 209.6}
+  closed_bracket2: {x: 305.58, y: 83.34}
+  closed_bracket3: {x: 303.32, y: 321.96}
+  to_start: {x: 63.16, y: 202.51}
+  not_correct: {x: 443.76, y: 166.56}
+  not_correct_: {x: 542.23, y: 165.9}
+  correct: {x: 487.18, y: 274.93}
+  accepted: {x: 697.81, y: 225.39}
